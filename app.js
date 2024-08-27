@@ -1,38 +1,102 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
+
 const app = express();
+//morgan middleware
+morgan; //
 //middleware :function that can modify the incoming data before it reach the server
+
+app.use(morgan('dev'));
+
 app.use(express.json());
+
+//creating our own middleware and understand the middleware stack
+//first
+app.use((req, res, next) => {
+  console.log('hello from the middle ware');
+  next();
+});
+
+//second
+app.use((req, res, next) => {
+  req.time = new Date().toISOString();
+  next();
+});
+
+//parse the tours and read the file sync
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-//GET
-app.get('/api/v1/tours', getAllTours);
+//tours
 
-//GET by id
-app.get(`/api/v1/tours/:id`, getTour);
+const tourRouter = express.Router();
+const userRouter = express.Router();
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
-//POST
-app.post('/api/v1/tours', createTour);
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').patch(updateTour).get(getTour).delete(deleteTour);
 
-//PATCH
-app.patch('/api/v1/tours/:id', updateTour);
+//users
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').patch(updateUser).get(getUser).delete(deleteUser);
 
-//DELETE
-app.delete('/api/v1/tours/:id');
-
+//
+//
+//
+//
 //the server and the port
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
+//users route CRUD operations
+
+function getAllUsers(req, res) {
+  res.status(500).json({
+    status: 'error ',
+    message: 'route are not implemented',
+  });
+}
+
+function getUser(req, res) {
+  res.status(500).json({
+    status: 'error ',
+    message: 'route are not implemented',
+  });
+}
+
+function deleteUser(req, res) {
+  res.status(500).json({
+    status: 'error ',
+    message: 'route are not implemented',
+  });
+}
+
+function updateUser(req, res) {
+  res.status(500).json({
+    status: 'error ',
+    message: 'route are not implemented',
+  });
+}
+
+function createUser(req, res) {
+  res.status(500).json({
+    status: 'error ',
+    message: 'route are not implemented',
+  });
+}
+
 //
 //
-//reFactored : all CRUD operation logic performed
+//
+//reFactored : all CRUD operation logic performed on the Tours
 
 function getAllTours(req, res) {
+  // console.log(req.time);
   res
     .status(200)
     .json({ status: 'success', results: tours.length, data: { tours } });
@@ -132,3 +196,19 @@ function deleteTour(req, res) {
     }
   );
 }
+
+// old way and the new way is creating a route and specify the methods which should be in it
+// //GET
+// app.get('/api/v1/tours', getAllTours);
+
+// //GET by id
+// app.get(`/api/v1/tours/:id`, getTour);
+
+// //POST
+// app.post('/api/v1/tours', createTour);
+
+// //PATCH
+// app.patch('/api/v1/tours/:id', updateTour);
+
+// //DELETE
+// app.delete('/api/v1/tours/:id',deleteTour);
