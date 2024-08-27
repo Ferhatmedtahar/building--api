@@ -18,5 +18,7 @@ our api handling the get requests `when someone hit the api/v1/tours` he get all
 
 ##### we read our data and parse it and send it
 
-when the post methods
-`we need to use a middleware`
+when the post methods :body parser ` app.use(express.json());`
+only we need to understand in the life cycle of req-res and in between we can set however we want from middlewares and the other are depend on the order in the code .
+
+`we need to use a middleware :function that can modify the incoming data before it reach the server`
