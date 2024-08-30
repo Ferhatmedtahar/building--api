@@ -1,8 +1,28 @@
 const fs = require('fs');
 //parse the tours and read the file sync
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
+
+exports.checkID = (req, res, next, val) => {
+  if (val > tours.length - 1) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Tour could not be found:Invalid ID',
+    });
+  }
+  next();
+};
+
+exports.checkBody = (req, res, next) => {
+  if (!req.body?.name || !req.body?.price) {
+    return res.status(400).json({
+      status: 'bad request',
+      message: 'body doesn`t fullfill the requirements',
+    });
+  }
+  next();
+};
 
 //reFactored : all CRUD operation logic performed on the Tours
 
@@ -16,12 +36,6 @@ exports.getAllTours = (req, res) => {
 exports.getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Tour could not be found:Invalid ID',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
@@ -30,13 +44,14 @@ exports.getTour = (req, res) => {
 };
 
 exports.createTour = (req, res) => {
-  // console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
+
   // tours = [...tours, newTour]; err
   tours.push(newTour);
+
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
       if (err) throw new Error('Tour can`t be created');
@@ -46,20 +61,13 @@ exports.createTour = (req, res) => {
           tour: newTour,
         },
       });
-    }
+    },
   );
   // res.status(200).send('done');
 };
 
 exports.updateTour = (req, res) => {
   const id = req.params.id * 1;
-
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Tour could not be found:Invalid ID',
-    });
-  }
 
   let tour = tours.find((el) => el.id === id);
   tour = { ...tour, ...req.body };
@@ -78,19 +86,13 @@ exports.updateTour = (req, res) => {
           tour,
         },
       });
-    }
+    },
   );
 };
 
 exports.deleteTour = (req, res) => {
   const id = req.params.id * 1;
 
-  if (id > tours.length - 1) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Tour could not be found:Invalid ID',
-    });
-  }
   const newTours = tours.filter((el) => el.id !== id);
 
   fs.writeFile(
@@ -104,7 +106,7 @@ exports.deleteTour = (req, res) => {
         status: 'success',
         mdata: null,
       });
-    }
+    },
   );
 };
 

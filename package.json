@@ -5,17 +5,28 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js ",
+    "prod": "NODE_ENV=production nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Ferhat",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
-    "@types/node": "^22.5.0"
+    "@types/node": "^22.5.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.9.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.35.0",
+    "prettier": "^3.3.3"
   }
 }
