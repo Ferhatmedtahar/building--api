@@ -52,7 +52,7 @@ the document uses similar data format like json but its called `BJON` bcs it's e
 
 `{"id":5555,"title":"study"}` field are key value pair .
 
-#### embedded documents :
+#### embedded documents : `reverse of normalization `
 
 extermly important concept : we can have array of objects
 we can instead of creating new documnet , we can make it better by embedding :including related data into a single document for quicker access and eisier data model `{not always}`
