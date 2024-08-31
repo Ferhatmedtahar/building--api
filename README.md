@@ -56,3 +56,68 @@ the document uses similar data format like json but its called `BJON` bcs it's e
 
 extermly important concept : we can have array of objects
 we can instead of creating new documnet , we can make it better by embedding :including related data into a single document for quicker access and eisier data model `{not always}`
+
+-max size for each document 60mb
+-each document have its own id `primary id ` no need to worry abt it
+
+# create and connect a remote database `{Cluster}`
+
+we created in atlas in the free plan a cluster and i connect it to the compass mongo and to the shell using the commnad `Win + r ` .
+
+now we connect it to our app using mongoose
+
+---
+
+###### we downloaded the vs code extention than copied the app development string and put everything in the `env`
+
+```js
+const mongoose = require('mongoose');
+
+const DB = process.env.APPDEV;
+
+mongoose.connect(DB).then(() => console.log(`DB connection successful !`));
+```
+
+this is what we did
+
+- mongoose is an `ODM` object data modeling library for mongo db and node js
+
+  -layer of abstractions like express and node js
+
+  -ODM allow us to write js code to interact with this db and we use it to get better DX and alot more functionality out of the box .
+
+- schemas : structure and validation and default values and easy model data and validations and query api .
+
+#### we require the mongoose
+
+```js
+const mongoose = require('mongoose');
+```
+
+than we use all function in it
+
+1/ connect the database by doing proccessing the url which i get from the cluster than use the connect method .
+
+2/ create a schema for a spific collection : we can validate and give an error message and required and unique ...ect
+
+```js
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'A tour must have a name'],
+    unique: true,
+  },
+});
+```
+
+create model from the schema .
+
+```js
+const Tour = mongoose.model('Tour', tourSchema);
+```
+
+CHECK DOCS ONLY...
+
+create a schema in the modelfile than create a model from that schema than export it and import it in the controllers than create a documentt and save it and handle the promise
+
+-- we can make alot thigns with the :get-query operations like filtering sorting paginations
