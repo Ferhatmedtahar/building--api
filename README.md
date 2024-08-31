@@ -121,3 +121,15 @@ CHECK DOCS ONLY...
 create a schema in the modelfile than create a model from that schema than export it and import it in the controllers than create a documentt and save it and handle the promise
 
 -- we can make alot thigns with the :get-query operations like filtering sorting paginations
+
+---
+
+# Summary :
+
+so first of all when we start building our api we create :`app.js server.js`
+and 3 folders :`routes , models , controllers`.
+
+router contain only direction to -> the controllers
+
+- which are bunch of `async/await : try/catch` and they use `model which we export ` to perform the CRUD operations and alot other stuff like sort and filter ...ect
+- in app.js we use `mongoose` to connect to the server`mongoose.connect(DB)` and in the model `schema ,model` to create and export model which we spesify in it the structure of our documents .
