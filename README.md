@@ -133,3 +133,14 @@ router contain only direction to -> the controllers
 
 - which are bunch of `async/await : try/catch` and they use `model which we export ` to perform the CRUD operations and alot other stuff like sort and filter ...ect
 - in app.js we use `mongoose` to connect to the server`mongoose.connect(DB)` and in the model `schema ,model` to create and export model which we spesify in it the structure of our documents .
+
+---
+
+we can create a file that it connect to the database and import data to use it while develment
+completly seperate from our express app
+
+---
+
+we implement the filter and sort and rest of operations in the controllers :getALL
+
+### to implement that features we need just to `manupilate string which we get from url and see what the DB accept`

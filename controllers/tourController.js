@@ -1,10 +1,5 @@
 const Tour = require('../models/TourModel');
 
-//parse the tours and read the file sync
-// const tours = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-// );
-
 // exports.checkBody = (req, res, next) => {
 //   if (!req.body?.name || !req.body?.price) {
 //     return res.status(400).json({
@@ -17,7 +12,27 @@ const Tour = require('../models/TourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    //build the query based on the filter , sort , pagination :
+    //1 ADVANCED FILTERING: filter based on all fields expect using limit and sort and page and fields
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    //the values which we want to specify : gte , gt, lte , lt
+    const queryStr = JSON.stringify(queryObj).replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`,
+    );
+    let query = Tour.find(JSON.parse(queryStr));
+    //2 SORT based on one fields not like filter we sort based on some values
+    // sort( val val) are seperated by space , but in the url we get it sepearted by comma
+
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    }
+    //excute the query
+    const tours = await query;
+    //send the response
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -46,10 +61,6 @@ exports.getTour = async (req, res) => {
 };
 
 exports.createTour = async (req, res) => {
-  // here the method called by the document
-  // const tour = new Tour({!data here});
-  // tour.save()   {return a promise }
-  //or but here we call the method directly on the modal
   try {
     const newTour = await Tour.create(req.body);
 
