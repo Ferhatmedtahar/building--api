@@ -10,7 +10,7 @@ const tourSchema = new mongoose.Schema({
     trim: true,
   },
   duration: {
-    type: String,
+    type: Number,
     required: [true, 'A Tour must have a duration'],
   },
   maxGroupSize: {
@@ -49,7 +49,12 @@ const tourSchema = new mongoose.Schema({
     trim: true,
     required: [true, 'A Tour must have a cover image'],
   },
-  images: {},
+  images: [String],
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  startDates: [Date],
 });
 // created a modal to create tours out of it
 
