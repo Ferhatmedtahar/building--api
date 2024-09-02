@@ -144,3 +144,38 @@ completly seperate from our express app
 we implement the filter and sort and rest of operations in the controllers :getALL
 
 ### to implement that features we need just to `manupilate string which we get from url and see what the DB accept`
+
+#### filter :
+
+filter the req.query from the other field and make lt , gt ,... available and thats all
+
+#### sort :
+
+we do if statemnet and we fix the string of query in sort field : `asc , - desc , multiple fields sorting  seperate by espace , default sort in the else statement which the createdAt field`
+
+#### Limit fields`project `:
+
+its just the select fields in SQL if andthats all
+
+#### pagination :
+
+easy work with skip and limit only
+
+#### alias:
+
+prefill the request queries.
+
+route for a request which is very popular for example the best 5 cheap tours
+that we dont have so huge url for that for example :
+`request done all the time :127.0.0.1:3000/api/v1/tours?limit=5&sort=-ratingAverage,price`
+
+we want request easy to memorize for users so we do in new route and
+set a middleware in the controller file and export which change the query object and thats all
+
+---
+
+## refactor the code always: CLASS FOR THE FEATURES
+
+we create class called APIFeatures and we add methods to the class
+and we create instance of this class [object] and we call this method
+passing the `req.query , Tour.find()` which is the model it self which we keep adding to it methods and excute it at the end once its done
