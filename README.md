@@ -184,8 +184,10 @@ passing the `req.query , Tour.find()` which is the model it self which we keep a
 
 ---
 
-# next topic: AGGREGATION PIPELINE
+## next topic: AGGREGATION PIPELINE
 
 - aggreation we can calculate alot things and process our data using : max min count avg and distances ...ect for statistics and alot other reasons
   aggreation allow us to perform operations on the documents we can filter them than group than calculate and we can `update` documents
   [MONGODB-DOCS]('https://www.mongodb.com/docs/manual/aggregation/#std-label-aggregation-pipeline-intro')
+
+- $unwind take array in some field and create for each item a document with everything same expect the field

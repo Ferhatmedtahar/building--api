@@ -114,8 +114,112 @@ exports.getTourStats = async (req, res) => {
     //group documents seperate sum avg,.....
     //pass array of stagesEach stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
 
-    const stats = Tour.aggregate([{}]);
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          //_id we group by it ,if we dont want to group so its null and the name of new field after a operations
+          _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRating: { $sum: '$ratingQuanitity' },
+          averageRating: { $avg: '$ratingAverage' },
+          averagePrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: {
+          averagePrice: 1,
+        },
+      },
+      // {
+      //   $match: {
+      //     _id: { $ne: 'easy' },
+      //   },
+      // },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err });
   }
 };
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+
+    // we need to analyse each tour startDate in our year and group with month so group by year than month
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+
+          numToursStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+
+      {
+        $addFields: {
+          month: '$_id',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+      {
+        $limit: 12,
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
+// const plan = await Tour.aggregate([
+//   {
+//     $unwind: '$startDates',
+//   },
+//   {
+//     $project: {
+//       Year: { $year: '$startDates' },
+//       Month: { $month: '$startDates' },
+//     },
+//   },
+//   {
+//     $match: { Year: { $eq: year } },
+//   },
+//   {
+//     $group: { _id: '$Month', numTours: { $sum: 1 } },
+//   },
+// ]);
