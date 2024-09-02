@@ -1,5 +1,5 @@
 const Tour = require('../models/TourModel');
-const APIFeatures = require('./utils/apiFeatures');
+const APIFeatures = require('../utils/apiFeatures');
 
 // exports.checkBody = (req, res, next) => {
 //   if (!req.body?.name || !req.body?.price) {
@@ -108,45 +108,14 @@ exports.deleteTour = async (req, res) => {
   }
 };
 
-//reFactored : all CRUD operation logic performed on the Tours
+exports.getTourStats = async (req, res) => {
+  try {
+    //similar to doing query but allow us to manupilate data in diffrent ways
+    //group documents seperate sum avg,.....
+    //pass array of stagesEach stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
 
-//build the query based on the filter , sort , pagination :
-//1 ADVANCED FILTERING: filter based on all fields expect using limit and sort and page and fields
-// const queryObj = { ...req.query };
-// const excludedFields = ['page', 'sort', 'limit', 'fields'];
-// excludedFields.forEach((el) => delete queryObj[el]);
-// //the values which we want to specify : gte , gt, lte , lt
-// const queryStr = JSON.stringify(queryObj).replace(
-//   /\b(gte|gt|lte|lt)\b/g,
-//   (match) => `$${match}`,
-// );
-// let query = Tour.find(JSON.parse(queryStr));
-
-// //2 SORT based on one fields not like filter we sort based on some values
-// // sort( val val) are seperated by space , but in the url we get it sepearted by comma
-
-// if (req.query.sort) {
-//   const sortBy = req.query.sort.split(',').join(' ');
-//   query = query.sort(sortBy);
-// } else {
-//   query = query.sort('-createdAt');
-// }
-
-//3/limiting fleids : project
-// if (req.query.fields) {
-//   const fields = req.query.fields.split(',').join(' ');
-//   query.select(fields);
-// } else {
-//   query.select('-__v');
-// }
-// //4 pagination : page=X&limit=Y    {.skip(limit*page).limit(default limit)}
-
-// //page1:1-2  , page2:3-4 page3:5-6 ,...ect we want to skip the prev page not this page also haha
-// const page = req.query.page * 1 || 1;
-// const limit = req.query.limit * 1 || 10;
-// const skip = (page - 1) * limit; //data before the start of the page
-// query = query.skip(skip).limit(limit);
-// if (req.query.page) {
-//   const numTours = await Tour.countDocuments();
-//   if (skip >= numTours) throw new Error('this page does not exist');
-// }
+    const stats = Tour.aggregate([{}]);
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err });
+  }
+};

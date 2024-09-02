@@ -179,3 +179,13 @@ set a middleware in the controller file and export which change the query object
 we create class called APIFeatures and we add methods to the class
 and we create instance of this class [object] and we call this method
 passing the `req.query , Tour.find()` which is the model it self which we keep adding to it methods and excute it at the end once its done
+
+---
+
+---
+
+# next topic: AGGREGATION PIPELINE
+
+- aggreation we can calculate alot things and process our data using : max min count avg and distances ...ect for statistics and alot other reasons
+  aggreation allow us to perform operations on the documents we can filter them than group than calculate and we can `update` documents
+  [MONGODB-DOCS]('https://www.mongodb.com/docs/manual/aggregation/#std-label-aggregation-pipeline-intro')
