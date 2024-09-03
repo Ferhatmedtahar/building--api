@@ -188,6 +188,82 @@ passing the `req.query , Tour.find()` which is the model it self which we keep a
 
 - aggreation we can calculate alot things and process our data using : max min count avg and distances ...ect for statistics and alot other reasons
   aggreation allow us to perform operations on the documents we can filter them than group than calculate and we can `update` documents
-  [MONGODB-DOCS]('https://www.mongodb.com/docs/manual/aggregation/#std-label-aggregation-pipeline-intro')
+  link :
+  `https://www.mongodb.com/docs/manual/aggregation/#std-label-aggregation-pipeline-intro`
 
 - $unwind take array in some field and create for each item a document with everything same expect the field
+
+## virtual properties :
+
+they are in the model , they are fields that we can define in our schema but they are not persisted means
+thats they are not saved in our database to space space !
+
+they make sense when we have derived fields calculated from other from example :
+save speed in km and miles!
+
+```js
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+});
+```
+
+and that in our schema we tell that we want to see them once i request as json or object !
+and keep in mind that we cant query based on them bcs they are not part of schema techniclly
+
+### NOTE: Anything can be calculated we do it either as virtual properties and if its statistics we use in aggregations
+
+---
+
+## mongoose middleware :
+
+we can do function to run before or after some events like saving a documents into the database
+
+4 types : `document , aggregate , model , query`middlewares
+
+```js
+tourSchema.pre('EVENT_NAME', function (next) {});
+```
+
+the change of the event name change the `this` keyword where it point
+
+1/documents:act on the current processed documents :we define them in the model file`check the Tourmodel.js` `the save event` `this in the DOCUMENT`
+
+2/query Middleware:allow us to run function before or after:`the /^find/ event` `this in the QUERY`
+...
+
+# validating data with mongoose
+
+validation is checking if the entred data are in the right format for each field in our document schema
+and that the values are there for the required fields .
+and we have sannitizaation which mean to ensure that the input data are `clean` nothing injetion to app or DB
+here we remove the unwanted caracteres code from the input data .
+`                          ` `GOLDEN ROLE`
+string:
+-unique :true not techniclly validator
+-match
+
+- maxlength ,minlength :[40,'error message'],
+- enum:{ values:['easy', 'medium', 'difficult'],message:'difficulty is either :easy ,medium,difficult '}
+
+  number:
+  -min, max :[1,'error message']
+  and work with days
+
+### our own `custom` validators :
+
+we do that by tjat by function that return either true:correct or false: error
+like some fields should be less than other field :price and discount
+
+````js
+   validate: {
+     validator: function (value) {
+      //work only when we create document not update
+       return this.price > value;
+     },
+     message: 'price should be highter than the discount ',
+   },
+   ```
+ fat model thin controller:
+`always keep everything in the model : validations ,mongoose middlewares `
+
+````
