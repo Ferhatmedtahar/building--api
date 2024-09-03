@@ -11,7 +11,12 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       //using external library `validator js ` to validate from there function
-      validate: validator.isAlpha,
+      validate: {
+        validator: function (val) {
+          return validator.isAlpha(val);
+        },
+        message: 'name must contain only caracters',
+      },
 
       maxlength: [40, 'a toue must have less than 40 caracteres'],
       minlength: [10, 'a toue must have more than 10 caracteres'],
