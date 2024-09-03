@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 //create a schema for the model
 
 const tourSchema = new mongoose.Schema(
@@ -9,6 +10,9 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
+      //using external library `validator js ` to validate from there function
+      validate: validator.isAlpha,
+
       maxlength: [40, 'a toue must have less than 40 caracteres'],
       minlength: [10, 'a toue must have more than 10 caracteres'],
     },

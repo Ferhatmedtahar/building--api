@@ -254,16 +254,22 @@ string:
 we do that by tjat by function that return either true:correct or false: error
 like some fields should be less than other field :price and discount
 
-````js
+```js
    validate: {
      validator: function (value) {
       //work only when we create document not update
        return this.price > value;
      },
      message: 'price should be highter than the discount ',
-   },
-   ```
- fat model thin controller:
-`always keep everything in the model : validations ,mongoose middlewares `
+   }
+```
 
-````
+### using library :
+
+```js
+//using external library `validator js ` to validate from there function
+validate: validator.isAlpha;
+```
+
+fat model thin controller:
+`always keep everything in the model : validations ,mongoose middlewares `
