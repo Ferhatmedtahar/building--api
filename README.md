@@ -273,3 +273,13 @@ validate: validator.isAlpha;
 
 fat model thin controller:
 `always keep everything in the model : validations ,mongoose middlewares `
+
+---
+
+# SUMMARY
+
+`we learned so far about mongo db and mongoose : mongo db and how to create db and do the CRUD operations for reading 'query' we can do alot of things than we created a 'CLUSTER' which are a hosted data base we use to development than we started learning about mongoose which is a ODM which we create inside of it a schema which have our all business login :validator ,schema, model, mongoose middleware , virtual properties and we use to do filter , sort , limitFields,pagination , alias  and we implemented the CRUD OPERATION IN THE CONTROLLERS which use the model, and than aggregations for statistics and refactors our code to MVC ARCHITECTURE `
+
+---
+
+# ERROR HANDLING
