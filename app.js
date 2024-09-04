@@ -1,8 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const appError = require('./utils/appError');
+
 const tourRouter = require(`./routes/tourRouter`);
 const userRouter = require(`./routes/userRouter`);
+const { error } = require('./controllers/errorController');
+const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
@@ -21,4 +25,18 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+//
+//
+//
+//
+
+//handling the undefined routes .
+
+app.all('*', (req, res, next) => {
+  //2-create the err and pass it throw the next function .
+  next(new appError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+//1 crete the middleware
+app.use(globalErrorHandler);
 module.exports = app;
