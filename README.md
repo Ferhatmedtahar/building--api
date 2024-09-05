@@ -322,7 +322,7 @@ app.use((err, req, res, next) => {});
 
 4 arguments
 created a middleware to handle error with 4 argument that catch error and
-to Trigger this middleware we just pass `next(err)` in the route for example who handle the undefined routes .and this err we create from custom class so we have `class+ route ` + middleware with 4 args 'error'
+to Trigger this middleware we just pass `next(err)` in the route for example who handle the undefined routes .and this err we create from custom class so we have `class+ route ` + middleware with 4 args 'error'.
 
 ---
 
@@ -377,3 +377,41 @@ in server.js
 
 errors or bugs which they occurs in our sync program and they are not caught
 example : console.log(x) which is not defined
+
+---
+
+---
+
+---
+
+# Authentication Authorization and Security
+
+- it's all about users signing up and logging in to our app
+- allowing users to access some protected parts in the app that are not accessable to the not logged in users .
+- JWT technique
+
+- all about users
+- remember that the user resource are special bcs it have to deal with the auth
+  i started by :
+
+1/ model our user data and create the `schema and model`
+2/create new user
+we do create user and log them in and update password in auth controller `sign up `and user controller and all rest operations
+3/ we use in the user handler `router.post .. for signup`
+
+- authentication: `signup and login and reset password`are relevant only the user it self not for an admin or anything else
+
+#### password managment !!!
+
+validate `passowrd are same with confirm  password`and encypt we do it in the model where anything
+have to do with data there we place it in the model to have fat model and thin controller
+
+```js
+validate: {
+      //this only work on .create() / .save
+      validator: function (value) {
+        return this.password === value;
+      },
+      message: 'mismatch password and confirm password',
+    },
+```
