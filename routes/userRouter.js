@@ -8,11 +8,12 @@ const {
   deleteUser,
   updateUser,
 } = require('../controllers/userController');
-const { signup } = require('../controllers/authController');
+const { signup, login } = require('../controllers/authController');
 //
 //route for this signup to create new user
 
 router.post('/signup', signup);
+router.post('/login', login);
 //login or reset password and system adminstator
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').patch(updateUser).get(getUser).delete(deleteUser);

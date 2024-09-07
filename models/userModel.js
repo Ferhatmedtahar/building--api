@@ -24,6 +24,7 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     required: [true, 'please provide a password'],
+    select: false,
     maxlength: [40, 'user password must be less than 40 caracteres'],
     minlength: [8, 'user password must be more than 5 caracteres'],
   },
@@ -38,7 +39,28 @@ const userSchema = mongoose.Schema({
       message: 'mismatch password and confirm password',
     },
   },
+  passwordChangedAt: Date,
 });
+
+//we will create intance method that ar availbe in every document
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+//reseted password
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const toTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    //password changed after the jwt was issued
+    return toTimeStamp > JWTTimeStamp;
+  }
+  //false means not changed
+  return false;
+};
+
 //encrypt the password
 userSchema.pre('save', async function (next) {
   //if password are not encypted

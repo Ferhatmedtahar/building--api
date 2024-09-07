@@ -5,8 +5,11 @@ module.exports = (err, req, res, next) => {
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
+
+  //DEVELOPMENT
   if (process.env.NODE_ENV === 'development') {
     res.status(err.statusCode).json({
+      err,
       status: err.status,
       message: err.message,
       stack: err.stack,
@@ -15,23 +18,29 @@ module.exports = (err, req, res, next) => {
 
   //PRODUCTION
   if (process.env.NODE_ENV === 'production') {
-    let errorDB = { ...err };
+    let errorApp = { ...err };
     //errors from mongo db error
     if (err.name === 'CastError') {
-      errorDB = handleCastErrorDB(err);
+      errorApp = handleCastErrorDB(err);
     }
     if (err.name === 'MongoServerError' && err.code === 11000) {
-      errorDB = handleMongoDuplicate(err);
+      errorApp = handleMongoDuplicate(err);
     }
     if (err.name === 'ValidationError') {
-      errorDB = handleValidationError(err);
+      errorApp = handleValidationError(err);
+    }
+    if (err.name === 'JsonWebTokenError') {
+      errorApp = handleJWTError(err);
     }
 
-    if (errorDB.isOperational) {
+    if (err.name === 'TokenExpiredError') {
+      errorApp = handleTokenExpire(err);
+    }
+    if (errorApp.isOperational) {
       //OPERATIONAL ,trusted error : we can send to client, errors that we can define them
-      res.status(errorDB.statusCode).json({
-        status: errorDB.status,
-        message: errorDB.message,
+      res.status(errorApp.statusCode).json({
+        status: errorApp.status,
+        message: errorApp.message,
       });
     }
 
@@ -67,4 +76,12 @@ function handleValidationError(err) {
   `;
 
   return new appError(message, 404);
+}
+
+function handleJWTError(err) {
+  return new appError('Invalid token , please log in again!', 401);
+}
+
+function handleTokenExpire(err) {
+  return new appError('Your token had expired ! please log in again', 401);
 }
