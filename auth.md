@@ -43,7 +43,7 @@ stateless solution for authentication : so need to store or remember in server `
 there are alternative which is store the user loggin state on the server using sessions.`not stateless`
 
 -- we have registered user in out data base so he login FOLLOWING :
-1/ post request{email , password ..whatever}
+1/ post request{email , password }
 2/ check if user and password are true SO generate`SECRET` JWT
 3/ send JWT back to the client
 4/ store it in cookie or localstorage
@@ -152,7 +152,7 @@ so we build middleware to restrict certain routes like deleting only to some use
 
 the middleware called restrict which check if the user role if he can do that operation or not !
 
-##### lecture 135-136 : password reset functionality and reset token
+##### lecture 135-136-137 : password reset functionality and reset token
 
 think works like that :
 you provide ur email than we get an email message inside of it a link to go enter ur new password .
@@ -164,4 +164,42 @@ and send that to this email .
 
 2/user send from his email with the password to update it
 
-so in auth controller we go create :
+so in auth controller we go create : resetPassword and forgetPassword routes in user like signupa and login
+post requests
+
+- we create in our schema fields for resetpasswordtoken and token expire time in our data base and method to create this two peices of data for each document in the database. and crypt the sensitive once.
+
+- send it in email using NodeMailer + mailtrap in email.js in utils:
+
+```js
+   1 create transporter
+   2 define email options
+   3 send email with node mailer
+```
+
+for example :
+
+```js
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+    //activate in gmail 'less secure app option'
+    // not good idea for production app bcs of limit 500 per day and ususally u get marked as spam
+    // so if its just private app its fine if no than dont .
+  },
+});
+```
+
+-- used development secrices fakes sending emails to real email but they come to us in development inbox.
+
+reset password flow :
+
+```js
+  1/ get user based on the token
+  2/ if token has not expired && there is user , set the new password
+  3/ update changedPasswordAt property for the user
+  4/ Log the user in : send jwt
+
+```

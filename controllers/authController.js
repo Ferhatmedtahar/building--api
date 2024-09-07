@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
-
+const sendEmail = require('../utils/email');
+const crypto = require('crypto');
 //signToken
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -115,3 +116,81 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+//forgot password functionallity
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) get user based on POSTed email
+  const email = req.body.email;
+  const user = await User.findOne({ email });
+  if (!user) next(new appError('there is no user with that email', 404));
+
+  // 2) Generate the random reset token
+  //intance method in user model bcs its related to the user
+  const resetToken = user.createPasswordResetToken();
+  // this will allow us to save this without before save . always read docs
+  await user.save({ validateBeforeSave: false });
+
+  // 3) send it to user's email
+  // the url path to the reset alogn with the token
+  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+  const message = `Forget your password ? Submit this request with your password amd password Confirm to :${resetURL}\n
+    if u didn't forget your password , please ignore this email`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset Token (valid for 10 min)',
+      message,
+    });
+    res.status(200).json({
+      status: 'success',
+      message: 'token sent to email!',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(
+      new appError(
+        'There was error sending this email , Try again later !',
+        500,
+      ),
+    );
+  }
+});
+
+//
+//
+//reset password functionallity
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  //1/ get user based on the token
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  //2/ if token has not expired && there is user , set the new password
+
+  if (!user) return next(new appError('Token is invalid or has expired', 400));
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  //3/ update changedPasswordAt property for the user
+
+  // we do this in middleware in usermodel not method but a middleware pre, post
+
+  //4/ Log the user in : send jwt
+  const token = signToken(user._id);
+  res.status(200).json({
+    token,
+  });
+});

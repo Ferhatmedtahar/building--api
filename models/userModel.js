@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 //name , email , photo ,role, password , passwordConfirm ,
 // methods:correctPassword:check if the passed password are correct with encrypted one in login
 // ,passwordChangedAt:compare if password changed after IAT
+//createPasswordResetToken:
 //middleWare to encrypt password and delete the confirm password
 const userSchema = mongoose.Schema({
   name: {
@@ -51,8 +53,12 @@ const userSchema = mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
+//
+//METHODS WE CAN CALL IN AUTH CONTROLLER TO DO STUFF//AVAILEBLE IN EACH DOCUMENT
 //we will create intance method that ar availbe in every document
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -61,7 +67,7 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-//reseted password
+//changed password check
 userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
   if (this.passwordChangedAt) {
     const toTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
@@ -72,6 +78,20 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
   return false;
 };
 
+userSchema.methods.createPasswordResetToken = function () {
+  //behave like a password
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
+
+//
+//MIDDLEWARES BEFORE OR AFTER THE DOCUMENTS ARE SAVE
 //encrypt the password
 userSchema.pre('save', async function (next) {
   //if password are not encypted
@@ -82,5 +102,13 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+//
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;
