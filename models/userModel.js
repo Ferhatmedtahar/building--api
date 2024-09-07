@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-//name , email , photo , password , passwordConfirm
+//name , email , photo ,role, password , passwordConfirm ,
+// methods:correctPassword:check if the passed password are correct with encrypted one in login
+// ,passwordChangedAt:compare if password changed after IAT
+//middleWare to encrypt password and delete the confirm password
 const userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -21,6 +24,14 @@ const userSchema = mongoose.Schema({
   },
   //place to the pic path
   photo: String,
+  //role
+  role: {
+    type: String,
+    //diffrent names depend on the app
+    enum: ['admin', 'user', 'guide', 'lead-guide'],
+    default: 'user',
+  },
+  //
   password: {
     type: String,
     required: [true, 'please provide a password'],

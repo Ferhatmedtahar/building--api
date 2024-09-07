@@ -11,7 +11,7 @@ const {
   getTourStats,
   getMonthlyPlan,
 } = require('../controllers/tourController');
-const { protect } = require('../controllers/authController');
+const { protect, restrictTo } = require('../controllers/authController');
 
 //params middleware :run on only who have params
 // router.param('id', checkID);
@@ -21,6 +21,11 @@ router.route('/stats').get(getTourStats);
 router.route('/monthlyPlan/:year').get(getMonthlyPlan);
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router.route('/').get(protect, getAllTours).post(createTour);
-router.route('/:id').patch(updateTour).get(getTour).delete(deleteTour);
 
+router
+  .route('/:id')
+  .patch(updateTour)
+  .get(getTour)
+  .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
+//we pass the role which can interact with this recourse.
 module.exports = router;

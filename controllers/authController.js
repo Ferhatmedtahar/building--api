@@ -16,12 +16,13 @@ const signToken = (id) => {
 exports.signup = catchAsync(async (req, res, next) => {
   // not good image a user send his body including part of this data role :admin .
   //so we distructur our body .
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password, passwordConfirm, role } = req.body;
   const newUser = await User.create({
     name,
     email,
     password,
     passwordConfirm,
+    role,
   });
   // const token = jwt.sign(payload:{ id: newUser._id }, 'secret');
   const token = signToken(newUser._id);
@@ -99,3 +100,18 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+//
+
+//restrictTo function
+//roles is array of the allowed :admin and lead guide.
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new appError(`you don't have permission to perform this action!`, 403),
+      );
+    }
+    next();
+  };
+};

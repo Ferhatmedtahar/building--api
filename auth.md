@@ -149,3 +149,19 @@ we know that u need to be logged in , in order to be able to see the tours but n
 you ofc can't
 
 so we build middleware to restrict certain routes like deleting only to some users.
+
+the middleware called restrict which check if the user role if he can do that operation or not !
+
+##### lecture 135-136 : password reset functionality and reset token
+
+think works like that :
+you provide ur email than we get an email message inside of it a link to go enter ur new password .
+
+2 steps:
+
+1/ user send a post request to forgotPassword route with email and this will create reset random token
+and send that to this email .
+
+2/user send from his email with the password to update it
+
+so in auth controller we go create :
