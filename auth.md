@@ -214,6 +214,33 @@ that we hash it and look for user who have the same hashed token and check if it
 
 in auth controller , ofc this route is protected means that the user should be logged in to allow him to change his password and in the protect middleware we check if the user exist and alot validation than store it in the req so we use that and we take in the body current password and the new password and the confirm password than inside the function we ge the user based in the id than we check if the current password are true than we save the new two passwords than we generate new token and return back to the user .
 
-##### lecture 139 : update the user data :
+##### lecture 139 : update the user data by himself:
 
 allow the logged in users to manupilate his user data in userControllers
+pattern is to update data abt the account in route and password in another route
+
+##### lecture 140 : delete the user for himself :
+
+when the user want to delete his account we dont delete the account but we just set the document to
+`unactive` bcs the user might in some point reActivate his Account
+we create in schema field called active Boolean
+
+##### lecture 141 : security best practices
+
+gather summary for best practices in security.
+check lecture
+
+- 1:hacker gained access to the DATABASE :we must ys encreypt our password and passwordresetToken
+
+- 2/ hacker tring to access the account trying millions of requests trying to reach : use bcrypt + rate limiter and max-login-attemps.(after fail 10 times or idk wait 2h or 3h).
+
+3/ cross site scripting :hacker try to inject script to our app that he run the code he want.
+`sanitize input`and `save JWT in HTTPonly cookies {browser can't modify just send and recieve }`not LOCALSTORAGE. and `SET HEADERS`
+
+4/DOS attack :hacker send million of requests patch and post :rate limiter , limit body parser avoid regular expression :take so much time to run .
+
+5/ use mongoose to avoid nosql injection + sanitize
+
+##### lecture 142 : sned token via cookie
+
+jwt should be stored in httponly cookies but now we are sending it as string in response.
