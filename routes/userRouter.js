@@ -13,6 +13,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protect,
 } = require('../controllers/authController');
 //
 //route for this signup to create new user
@@ -21,9 +23,11 @@ router.post('/signup', signup);
 router.post('/login', login);
 //
 //
+//resetPassword
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
-//resetPassword
+//update password:
+router.patch('/updatePassword', protect, updatePassword);
 
 //login or reset password and system adminstator
 router.route('/').get(getAllUsers).post(createUser);

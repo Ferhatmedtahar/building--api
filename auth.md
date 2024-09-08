@@ -203,3 +203,17 @@ reset password flow :
   4/ Log the user in : send jwt
 
 ```
+
+###### summary:
+
+to implement the reset password we need first to hit to the forgot password route which is :
+get user based on the posted email than generate random token:`passwordResetToken` not jwt token than sendemail to the email contain the reset url and message than we get email contain the url with that token that we indentify the users using that token  
+that we hash it and look for user who have the same hashed token and check if its not exipred than update the changed passwordat property and return the token to the user
+
+##### lecture 138:update the current user password :
+
+in auth controller , ofc this route is protected means that the user should be logged in to allow him to change his password and in the protect middleware we check if the user exist and alot validation than store it in the req so we use that and we take in the body current password and the new password and the confirm password than inside the function we ge the user based in the id than we check if the current password are true than we save the new two passwords than we generate new token and return back to the user .
+
+##### lecture 139 : update the user data :
+
+allow the logged in users to manupilate his user data in userControllers

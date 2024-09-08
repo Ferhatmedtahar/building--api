@@ -5,10 +5,25 @@ const catchAsync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 const crypto = require('crypto');
+//
+//
 //signToken
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+//
+//
+//createSendToken
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
   });
 };
 
@@ -26,14 +41,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role,
   });
   // const token = jwt.sign(payload:{ id: newUser._id }, 'secret');
-  const token = signToken(newUser._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -50,12 +58,9 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new appError('Incorrect email or password', 401));
   }
+
   //3/ if everything ok . send the token to the client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -99,6 +104,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //than we will grant the access to  rpotected route
   req.user = currentUser;
+
   next();
 });
 
@@ -189,8 +195,37 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // we do this in middleware in usermodel not method but a middleware pre, post
 
   //4/ Log the user in : send jwt
-  const token = signToken(user._id);
-  res.status(200).json({
-    token,
-  });
+  createSendToken(user, 200, res);
+});
+
+//update user password
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  //user need to pass his password as security mesuare
+  //1 get user
+  const currentPassword = req.body.currentPassword;
+  const password = req.body.password;
+  const passwordConfirm = req.body.passwordConfirm;
+
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user) next(new appError('user not found!', 404));
+
+  // 2 check if password correct
+
+  const correctpassword = await user.correctPassword(
+    currentPassword,
+    user.password,
+  );
+  if (!correctpassword)
+    next(new appError('wrong password, please try again!', 401));
+
+  //3 update the password
+
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+
+  //4 log the user again : send new token
+
+  createSendToken(user, 200, res);
 });
