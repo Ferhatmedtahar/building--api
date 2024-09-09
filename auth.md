@@ -241,6 +241,112 @@ check lecture
 
 5/ use mongoose to avoid nosql injection + sanitize
 
-##### lecture 142 : sned token via cookie
+##### lecture 142 : send token via cookie
 
 jwt should be stored in httponly cookies but now we are sending it as string in response.
+
+we do that in the auth controller .
+`cookies: is just some small peice of text that server can send to the client and it get stored automaticlly stored and send it back in all future requests to that server where it came from.`
+
+define the cookie and send it via response
+dont work with http localhost
+
+```js
+res.cookie('jwt', token, {
+  expires: new Date(
+    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+  ),
+  secure: true,
+  httpOnly: true,
+});
+```
+
+##### lecture 143 : implement rate limit
+
+allow us to prevent alot attacks
+
+implemented as global middleware function
+count the number of requests coming from one ip and when there are too many requets block this requst
+
+done in app.js
+
+packaage called
+`nmp i express-rate-limit`
+read docs :
+import the package and set the limiter than use it as middleware .
+
+```js
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Redis, Memcached, etc. See below.
+});
+```
+
+```js
+//rate limiter is a middle ware function created based on the objects
+const limiter = rateLimit({
+  max: 100,
+
+  windowMs: 60 * 60 * 1000,
+  //100 request in 1h per ip if he pass that limit he get an error and this error message we specify
+  message: 'Too many requests from this ip, please try again in hour',
+});
+//limit access to the /api route only .
+app.use('/api', limiter);
+```
+
+create a rate limit you can check it in postman and cookies also
+the limit will reset again if the app crash
+
+##### lecture 144 : setting security HTTP Headers
+
+`npm i helmet`
+npm package
+to set import http header. we do that ofc by using a middleware
+put it in the beggings
+always in app.use or anything when we use a middleware we need to place function not function call or we can call function which in turn return function .
+
+```js
+app.use(
+  express.json({
+    limit: '10kb',
+  }),
+);
+```
+
+##### lecture 145 : data Sanitization
+
+defend attack
+means that we clean all the data that comes to the app from weird code , from attacks
+ofc the data come from body in the req and alot other places but its perfiect to place it under the body parser
+
+easy to do mongo db injetions
+` npm i express-mongo-sanitize xss-clean`
+mongoSanitize() return function so weise it
+-check the body and params and query string aand remove all dollar and dots
+
+`xss-clean`: clean all the user input from html code and some js code
+
+##### lecture 146 : params pollutions:
+
+`URL/api/v1/tours?sort=duration&sort=price` we are not prepared to have something like this to deal with so what to do in this case !
+we prevent the params pollutions by package which remove the duplicate fields
+`npm i hpp`
+
+```js
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'maxGroupSize',
+      'ratingAverage',
+      'difficulty',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
+```
