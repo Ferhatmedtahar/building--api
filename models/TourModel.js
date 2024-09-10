@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 //create a schema for the model
 
 const tourSchema = new mongoose.Schema(
@@ -76,6 +77,40 @@ const tourSchema = new mongoose.Schema(
     },
     slug: String,
     startDates: [Date],
+
+    //location
+    //embedded
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      adress: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+          coordinates: [Number],
+          adress: String,
+          description: String,
+          day: Number,
+        },
+      },
+    ],
+    //guides
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     //after this we want to define it explicitly in our schema in options object and tell the schema that i want this virtuals to appear when i need it
@@ -94,6 +129,29 @@ tourSchema.virtual('durationWeeks').get(function () {
   //we dont use arrow function bcs it doesnt have  its own this keyword.
   return this.duration / 7;
 });
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
+// created a modal to create tours out of it
+const Tour = mongoose.model('Tour', tourSchema);
+module.exports = Tour;
+
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+//
+
+//
+
+//
 
 //DOCUMENT MIDDLEWARE : runs before the .save() and .create() not in insertMany
 //pre save middleware
@@ -119,7 +177,3 @@ tourSchema.virtual('durationWeeks').get(function () {
 // tourSchema.post(/^find/, function (docs,next) {
 //   this.find({});//chain more filter code
 // });
-
-// created a modal to create tours out of it
-const Tour = mongoose.model('Tour', tourSchema);
-module.exports = Tour;

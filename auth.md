@@ -225,7 +225,7 @@ when the user want to delete his account we dont delete the account but we just 
 `unactive` bcs the user might in some point reActivate his Account
 we create in schema field called active Boolean
 
-##### lecture 141 : security best practices
+### lecture 141 : security best practices
 
 gather summary for best practices in security.
 check lecture
