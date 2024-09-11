@@ -130,6 +130,19 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+//virtual populate
+//. virtual() , name of this field,
+//objectof options:
+//1/name of model which we want to ref
+//2/ specify 2 fields : foreign field and local field
+//foreign field :name of field in the other fields
+//local field : in this cuurent firlds
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',

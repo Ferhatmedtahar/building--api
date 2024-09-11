@@ -10,7 +10,7 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const tourRouter = require(`./routes/tourRouter`);
 const userRouter = require(`./routes/userRouter`);
-
+const reviewRouter = require('./routes/reviewRouter');
 const app = express();
 //securtiy http headers
 app.use(helmet());
@@ -67,6 +67,7 @@ app.use((req, res, next) => {
 //routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/review', reviewRouter);
 
 //
 //

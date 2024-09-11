@@ -163,3 +163,41 @@ we can specify what we want or dont want to see
 \*--POPULATE we need it when we have relations it create new query ,its the one which create new query to get rest of referenced data and we still can query it alone
 
 when we query data and we have duplicate in populate we do query middleware
+
+###### lecture 154: reviews model and parents referencing :
+
+when we do model we do the schema than consider doing the virtual properties:fields are not stored in database but calculated using some other values in that documents
+than the methods than and middlewares like query or document ...ect
+
+#### lecture 157 : virtual populate:
+
+populating tour or user good but left for us one problem : how to access reveiws on tours.
+means that how can i get all reviews of a specific tour or to get all reveiws of a user
+EXPLAINATION: this problem araise bcs we did parent referencing on reviews
+
+solutions:after we did parent ref we now have the review point to the parent and the parent have no knowledge about the reviews pointing to it SO :
+we do instead of doing ref inside the tour:NOT GOOD!
+
+the `virtual populate`:we can populate tour with reviews:
+like gaining the knowledge about who is pointing on u without having that array which can grow indirently.
+
+have that array of ids of reviews but not stored in thatt document and in that database.
+
+```js
+//virtual populate
+//. virtual() , name of this field,
+//objectof options:
+//1/name of model which we want to ref
+//2/ specify 2 fields : foreign field and local field
+//foreign field :name of field in the other fields
+//local field : in this cuurent firlds
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+```
+
+we dont get it till we call it in one of the routes usually only in `get/:id`
+
+//REVIEW :got CHAIN OF POPULATE
