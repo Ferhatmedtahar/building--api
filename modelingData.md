@@ -3,7 +3,7 @@
 -- whole new level of mongoose and data modeling
 -- totally functioning with all routes and resources and complete auth and establshed relations between all data sets .
 
-#### lecture 148 : mongo DB Data Modeling
+##### lecture 148 : mongo DB Data Modeling
 
 -to build data intensive apps is to medel all this data in mongo db.
 
@@ -164,12 +164,12 @@ we can specify what we want or dont want to see
 
 when we query data and we have duplicate in populate we do query middleware
 
-###### lecture 154: reviews model and parents referencing :
+##### lecture 154: reviews model and parents referencing :
 
 when we do model we do the schema than consider doing the virtual properties:fields are not stored in database but calculated using some other values in that documents
 than the methods than and middlewares like query or document ...ect
 
-#### lecture 157 : virtual populate:
+##### lecture 157 : virtual populate:
 
 populating tour or user good but left for us one problem : how to access reveiws on tours.
 means that how can i get all reviews of a specific tour or to get all reveiws of a user
@@ -201,3 +201,35 @@ tourSchema.virtual('reviews', {
 we dont get it till we call it in one of the routes usually only in `get/:id`
 
 //REVIEW :got CHAIN OF POPULATE
+
+##### lecture158 : implement nested routes:
+
+when we create a review we need manually to pass the tour id and the user id manually in req body than create the review its ok to do this while development .
+REVIEW is created in real world by the user id should come from the logged in user and the tour id should come from the current open tour .should be incoded from the url
+
+<!-- ? NESTED ROUTES USED WHEN  WE HAVE CLEAR RELATIONSHIP BETWEEN THE PARENT AND CHILD BETWEEN RESOURCES IN DATA MODEL -->
+<!-- * we implement this touring in the parent router  -->
+
+SHOW THE RELATION BETWEEN PARENT CHILD
+
+##### lecture 159: nested routes in express
+
+`merge params`
+WE CAN REDIRECT AND JUMP FROM ROUTE TO ANOTHER
+so when i have relation :Parent-Child :we connect them using parent router than we redirect it to the child route that we dont write the id's manual
+
+#### lecture 161 : building factory function delete:
+
+function that return our handler function. for the CRUD operations
+now we do delete
+
+its like having one controller function producer that create delete update..ect for each one
+GENERALIZATION , bcs all the delete functions are so specific but this one are general
+
+- for all CRUD operations
+
+SO CLEAN:
+controllers : user , tour , review + `auth , error ,HANDLEFACTORY`
+models:for Schema ,virtual , methods,pre +post middlewares ,
+routes :route , post ,get ...+ function related to
+if u ever needed to modify req or validate something make a middleware

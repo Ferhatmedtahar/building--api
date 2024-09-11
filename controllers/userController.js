@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const appError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const factory = require('./handlerFactory');
 
 //update the current user data :name & email data :POST
 
@@ -48,48 +49,18 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-//admin op
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  if (!users) {
-    res.status(500).json({
-      status: 'error ',
-      message: 'route are not implemented',
-    });
-  }
-  res.status(200).json({
-    status: 'success ',
-    data: {
-      users,
-    },
-  });
-});
+//admin operations
+exports.getAllUsers = factory.getAll(User);
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error ',
-    message: 'route are not implemented',
-  });
-};
-
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error ',
-    message: 'route are not implemented',
-  });
-};
-//admin updating
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error ',
-    message: 'route are not implemented',
-  });
-};
-
+//
+//
+exports.getUser = factory.getOne(User);
+exports.deleteUser = factory.deleteOne(User);
+exports.updateUser = factory.updateOne(User);
 exports.createUser = (req, res) => {
   res.status(500).json({
-    status: 'error ',
-    message: 'route are not implemented',
+    status: 'error',
+    message: 'this route is not defined ! , please Login/SignUp instead ',
   });
 };
 
