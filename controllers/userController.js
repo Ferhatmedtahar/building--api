@@ -4,7 +4,10 @@ const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
 //update the current user data :name & email data :POST
-
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+};
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1 create error if user post password data
 
@@ -51,12 +54,10 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 
 //admin operations
 exports.getAllUsers = factory.getAll(User);
-
-//
-//
 exports.getUser = factory.getOne(User);
 exports.deleteUser = factory.deleteOne(User);
 exports.updateUser = factory.updateOne(User);
+//
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',

@@ -23,15 +23,20 @@ router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/stats').get(getTourStats);
 
-router.route('/monthlyPlan/:year').get(getMonthlyPlan);
+router
+  .route('/monthlyPlan/:year')
+  .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
-router.route('/').get(protect, getAllTours).post(createTour);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(protect, restrictTo('admin', 'lead-guide'), createTour);
 
 router
   .route('/:id')
-  .patch(updateTour)
+  .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .get(getTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 //we pass the role which can interact with this recourse.

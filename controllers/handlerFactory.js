@@ -7,7 +7,7 @@ exports.deleteOne = (model) => {
     const doc = await model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
-      return next(new appError(`no ${model} found with that ID`));
+      return next(new appError(`no ${model} found with that ID`, 404));
     }
     res.status(204).json({ status: 'succcss', data: null });
   });

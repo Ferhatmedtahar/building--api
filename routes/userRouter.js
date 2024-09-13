@@ -9,6 +9,7 @@ const {
   updateUser,
   updateMe,
   deleteMe,
+  getMe,
 } = require('../controllers/userController');
 const {
   signup,
@@ -30,11 +31,13 @@ router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
+//!you need to be auth always from this point
 //update password:
 
 router.patch('/updatePassword', protect, updatePassword);
 
 //
+router.get('/getMe', protect, getMe, getUser);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 

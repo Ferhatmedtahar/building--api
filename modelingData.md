@@ -232,4 +232,14 @@ SO CLEAN:
 controllers : user , tour , review + `auth , error ,HANDLEFACTORY`
 models:for Schema ,virtual , methods,pre +post middlewares ,
 routes :route , post ,get ...+ function related to
-if u ever needed to modify req or validate something make a middleware
+Utils:apiFeatures ,appError , catchAsync , email
+static: css ,img ,html to serve (temp)
+
+--always the auth stuff are defined in route declarations
+--if u ever needed to modify req or validate something make a middleware
+
+##### lecture 165:auth missing peice
+
+we can expose some methods and route to the world that we can share for other websites to get
+
+#### lecture:167 Indexes

@@ -11,15 +11,20 @@ const { protect, restrictTo } = require('../controllers/authController');
 //now i want to protect  routes that no one can use if its not logged in and restrict for all expect for admin and lead guide
 //? MERGE PARAMS
 const router = express.Router({ mergeParams: true });
+
+//auth
+router.use(protect);
+
+//router
 router
   .route('/')
   .get(getAllReviews)
-  .post(protect, restrictTo('user'), setTourUserIds, createReview);
+  .post(restrictTo('user'), setTourUserIds, createReview);
 router
   .route('/:id')
   .get(getReview)
-  .patch(protect, restrictTo('user'), updateReview)
-  .delete(protect, restrictTo('user'), deleteReview);
+  .patch(restrictTo('user', 'admin'), updateReview)
+  .delete(restrictTo('user', 'admin'), deleteReview);
 
 module.exports = router;
 
