@@ -32,7 +32,7 @@ adding controllers +routes folder for each endpoint +server.js and the npm scrip
 install - create databases and insert and query in multiple ways
 
 - it's noSQL DB
-- each DB contain collections `table` and each collection contain (data structure) documents `rows` for a entity 'post , review ,user'
+- each DB contain collections `table` and each collection contain (data structure) documents `rows` for a entity 'tour, review ,user'
 
 - collection is collection of entities and the entity is document which is also a data structure like json which make our lives alot easier .
 

@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'email are not correct'],
-    maxlength: [50, 'user email must be less than 40 caracteres'],
+    maxlength: [50, 'user email must be less than 50 caracteres'],
     minlength: [10, 'user email must be more than 5 caracteres'],
   },
   //place to the pic path
