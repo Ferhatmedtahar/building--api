@@ -36,6 +36,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'ratingAverage must be more than 1 '],
       max: [5, 'ratingAverage must be less than 5'],
+      set: (value) => Math.round(value * 10) / 10,
     },
     ratingQuantity: {
       type: Number,
@@ -123,6 +124,12 @@ const tourSchema = new mongoose.Schema(
     },
   },
 );
+//*INDEX
+//1 asc  , -1 Desc
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 //virtual properties : calculated from one to another to save space and not saved in the database
 
 tourSchema.virtual('durationWeeks').get(function () {
@@ -168,11 +175,11 @@ module.exports = Tour;
 
 //DOCUMENT MIDDLEWARE : runs before the .save() and .create() not in insertMany
 //pre save middleware
-// tourSchema.pre('save', function (next) {
-//   //this is the currently document which are getting proccessed
-//   this.slug = slugify(this.name, { lower: true });
-//   next();
-// });
+tourSchema.pre('save', function (next) {
+  //this is the currently document which are getting proccessed
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 //
 

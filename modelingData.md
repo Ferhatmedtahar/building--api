@@ -242,4 +242,66 @@ static: css ,img ,html to serve (temp)
 
 we can expose some methods and route to the world that we can share for other websites to get
 
-#### lecture:167 Indexes
+##### lecture:167 Indexes
+
+huge win for performance in reading data for search and filter ...ect
+
+```js
+//add explain
+const doc = await features.query.explain();
+```
+
+chain .explain() after the query wil add STATISTICS.
+
+-when we did query we got 3 results and it show us that we examen 9 docs which is not good if we have alot docs not effient .
+
+`we can build indexes on specific fields in a collection `
+when we set a unique field , behind the scenes mongoose create index for it
+
+-which field to index it ? how do we decide ?
+
+-- think about access pattern like which field are queried the most and which are mostly read not write
+
+##### lecture 168-169: calculating the Average Rating on Tours
+
+Storing summary of related data set in the main data set is popular technique .
+ratings , we have in tours ratings average. and number of rating.
+great to avoid extra queruies
+
+we create a function that it take this tour id and calculate what we need and even update the tour and than we call this function in middleware .
+
+`STATIC METHOD`
+same as methods but they point to the model so we can do in it the aggreagation .
+
+after calculating what we need , now we want to call this static function using middlware
+
+so in general we created a statics function inside the schema and we aggreate than we update the tour model
+than we call this statics function using post save middleware
+
+ok , now this function run only when the review are craeted! now we need to do when its updated and deleted
+
+```js
+reviewSchema.post('save', function () {
+  //this points to the current  review document .
+  // this.constructor is the document than the constructor is the model who craeted that document
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+reviewSchema.post(/^findOneAnd/, async function (doc) {
+  await doc.constructor.calcAverageRatings(doc.tour);
+});
+```
+
+it work it always calculate and upadte the tour when new review CREATED , or UPDATED , or DELETED
+
+##### lecture 170 : preventing duplicated reviews
+
+before we created alot review for same tour with same review and this should not happend , a user can have only one review for each 1 tour
+we make an index for user,tour combined
+
+##### lecture 171 : geospacial queries
+
+we created in tour model startLocation and locations fields which they are GEOJSON :
+data describe places on earth using : lat long or even complex geometries .
+
+geospatial query allow us to perform great operations to offer more features
