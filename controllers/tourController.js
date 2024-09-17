@@ -1,5 +1,4 @@
 const Tour = require('../models/TourModel');
-const APIFeatures = require('../utils/apiFeatures');
 const appError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
@@ -30,12 +29,90 @@ exports.deleteTour = factory.deleteOne(Tour);
 //   res.status(204).json({ status: 'succcss', data: null });
 // });
 
+//*GEOspatial query
+//EXAMPLE tours-distance/200/center/-34,50/unit/km
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  //!1- get the data we need
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng) {
+    next(
+      new appError(
+        'Please provide latitude and longitude in this format lat,lng.',
+        400,
+      ),
+    );
+  }
+  //? 2specify the filter object
+  // query for start location :geowithin and the center and distance only thats all what we need
+  //!the unit is radiante = our distance/raduis of earth in
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+  //? 3-add index for the field which are doing in it the geospatial query
+  // console.log(distance, unit, lat, lng);
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
+
+//calculate distances
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng) {
+    next(
+      new appError(
+        'Please provide latitude and longitude in this format lat,lng.',
+        400,
+      ),
+    );
+  }
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.0001;
+  //3 aggraegation pipeline
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      distances,
+    },
+  });
+});
+
+//
+//
+//
+//
 //ageregate
 
 exports.getTourStats = async (req, res) => {
   try {
     //similar to doing query but allow us to manupilate data in diffrent ways
-    //group documents seperate sum avg,.....
+    //group documents seperate sum avg,min ,max....
     //pass array of stagesEach stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
 
     const stats = await Tour.aggregate([

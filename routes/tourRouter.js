@@ -9,13 +9,12 @@ const {
   createTour,
   aliasTopTours,
   getTourStats,
+  getToursWithin,
+  getDistances,
   getMonthlyPlan,
 } = require('../controllers/tourController');
 const { protect, restrictTo } = require('../controllers/authController');
 const reviewRouter = require('../routes/reviewRouter');
-
-//params middleware :run on only who have params
-// router.param('id', checkID);
 
 //we use middle ware to change the request object as we need that the url is simple without that queries.
 //REVIEW we are mounting a router in this url
@@ -28,6 +27,24 @@ router
   .get(protect, restrictTo('admin', 'lead-guide', 'guide'), getMonthlyPlan);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
+
+//?we could do this is search params but its more clean doing this in the url + used alot (url contain alot options )
+//tours-distance?distance=200&center=-34,50&unit=km
+// BETTER tours-distance/200/center/-34,50/uni/km
+
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+
+//*geo spatial aggerations
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
+
+/*
+
+//*the CRUD operations on the tours
+
+
+*/
 
 router
   .route('/')
@@ -49,3 +66,6 @@ module.exports = router;
 //POST/tour/d234231/reviews
 //GET/tour/d234231/reviews
 //GET/tour/d234231/reviews/93f1230a
+
+//params middleware :run on only who have params
+// router.param('id', checkID);

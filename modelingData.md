@@ -305,3 +305,24 @@ we created in tour model startLocation and locations fields which they are GEOJS
 data describe places on earth using : lat long or even complex geometries .
 
 geospatial query allow us to perform great operations to offer more features
+
+-we create route for this in get methods all in url not search query params
+
+```js
+//!1- get the data we need
+const { distance, latlng, unit } = req.params;
+const [lat, lng] = latlng.split(',');
+if (!lat || !lng) err...ect
+//? 2specify the filter object
+//!the unit is radiante = our distance/raduis of earth in
+const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+const tours = await Tour.find({
+  startLocation: { $geoWithin: { $center: [[lng, lat], radius] } },
+});
+//? 3-add index for the field which are doing in it the geospatial query
+tourSchema.index({ startLocation: '2dsphere'});
+```
+
+-we define the route and params to know which data we are working with .
+
+aggreagation middleware
