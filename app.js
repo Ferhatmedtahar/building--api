@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const path = require('path');
 const appError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -14,6 +15,11 @@ const reviewRouter = require('./routes/reviewRouter');
 const app = express();
 //securtiy http headers
 app.use(helmet());
+
+//!setting up pug
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 //creating our own middleware and understand the middleware stack
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -58,12 +64,20 @@ app.use(
 );
 
 // serving static data
-app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, 'public')));
 //testing and looking headers and time
 app.use((req, res, next) => {
   req.time = new Date().toISOString();
   next();
 });
+
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'The Forest Hicker',
+    user: 'sandra',
+  });
+});
+
 //routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
