@@ -75,3 +75,14 @@ link(rel='stylesheet' href='css/style.css')
 we can do some simple javaScript in it
 
 Buffered code is the code which are added to the view .
+
+- we can include file inside another like export and import in all programming language
+- to do classes in elements : `header.header  , a.nav__el.nav__el--logout  `
+
+##### lecture 180 : extending the base :EXtends base template :blocks
+
+like the layout in next js
+
+# skipped!!!
+
+---

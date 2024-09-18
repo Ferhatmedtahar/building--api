@@ -12,13 +12,19 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require(`./routes/tourRouter`);
 const userRouter = require(`./routes/userRouter`);
 const reviewRouter = require('./routes/reviewRouter');
+const viewRouter = require('./routes/viewRoutes');
+const CookieParser = require('cookie-parser');
 const app = express();
 //securtiy http headers
 app.use(helmet());
 
 //!setting up pug
 app.set('view engine', 'pug');
+
 app.set('views', path.join(__dirname, 'views'));
+
+// serving static data
+app.use(express.static(path.join(__dirname, 'public')));
 
 //creating our own middleware and understand the middleware stack
 if (process.env.NODE_ENV === 'development') {
@@ -35,12 +41,10 @@ const limiter = rateLimit({
 //limit access to the /api route only .
 app.use('/api', limiter);
 
-//body parser reading  data from body into req.body
-app.use(
-  express.json({
-    limit: '10kb',
-  }),
-);
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(CookieParser());
 
 // defend attack againt nosql query injection aand XSS attacks SO IMPORT
 //easy to do anything , using all emails aand popular passwords
@@ -63,25 +67,17 @@ app.use(
   }),
 );
 
-// serving static data
-app.use(express.static(path.join(__dirname, 'public')));
 //testing and looking headers and time
 app.use((req, res, next) => {
   req.time = new Date().toISOString();
   next();
 });
 
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'The Forest Hicker',
-    user: 'sandra',
-  });
-});
-
-//routes
+//  ROUTES
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/review', reviewRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //
 //
