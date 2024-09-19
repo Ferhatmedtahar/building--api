@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 
 const {
   getAllUsers,
@@ -10,6 +9,8 @@ const {
   updateMe,
   deleteMe,
   getMe,
+  uploadUserPhoto,
+  resizeUserPhoto,
 } = require('../controllers/userController');
 const {
   signup,
@@ -19,6 +20,9 @@ const {
   updatePassword,
   protect,
 } = require('../controllers/authController');
+
+const router = express.Router();
+
 //
 //route for this signup to create new user
 
@@ -38,7 +42,8 @@ router.patch('/updatePassword', protect, updatePassword);
 
 //
 router.get('/getMe', protect, getMe, getUser);
-router.patch('/updateMe', protect, updateMe);
+router.get('/me', getMe, getUser);
+router.patch('/updateMe', protect, uploadUserPhoto, resizeUserPhoto, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 
 //login or reset password and system adminstator

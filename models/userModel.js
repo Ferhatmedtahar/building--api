@@ -25,7 +25,7 @@ const userSchema = mongoose.Schema({
     minlength: [10, 'user email must be more than 5 caracteres'],
   },
   //place to the pic path
-  photo: String,
+  photo: { type: String, default: 'default.jpg' },
   //role
   role: {
     type: String,
