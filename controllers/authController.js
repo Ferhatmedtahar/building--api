@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const appError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 const crypto = require('crypto');
 
 //
@@ -39,8 +39,15 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-//
-//sign up
+/*
+
+//* the auth flow code now
+
+*/
+
+//*sign up
+//REVIEW
+
 exports.signup = catchAsync(async (req, res, next) => {
   // not good image a user send his body including part of this data role :admin .
   //so we distructur our body .
@@ -52,9 +59,15 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
     role,
   });
+
+  const url = `${req.protocol}://${req.get('host')}`;
+  console.log(url);
+  await new Email(newUser, url).sendWelcome();
   // const token = jwt.sign(payload:{ id: newUser._id }, 'secret');
   createSendToken(newUser, 201, res);
 });
+
+//REVIEW
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -74,6 +87,8 @@ exports.login = catchAsync(async (req, res, next) => {
   //3/ if everything ok . send the token to the client
   createSendToken(user, 200, res);
 });
+
+//REVIEW
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) get token and check if its there (exist)
@@ -123,7 +138,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 //
 
-//restrictTo function
+//REVIEW
 //roles is array of the allowed :admin and lead guide.
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
@@ -137,6 +152,7 @@ exports.restrictTo = (...roles) => {
 };
 
 //forgot password functionallity
+//REVIEW
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) get user based on POSTed email
@@ -156,11 +172,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forget your password ? Submit this request with your password amd password Confirm to :${resetURL}\n
     if u didn't forget your password , please ignore this email`;
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset Token (valid for 10 min)',
-      message,
-    });
+    await new Email(user, resetURL).sendResetPassword();
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: 'Your password reset Token (valid for 10 min)',
+    //   message,
+    // });
     res.status(200).json({
       status: 'success',
       message: 'token sent to email!',
@@ -181,6 +198,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 //
 //
 //reset password functionallity
+//REVIEW
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //1/ get user based on the token
@@ -212,6 +230,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 //update user password
+//REVIEW
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //user need to pass his password as security mesuare
@@ -242,6 +261,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+//REVIEW
 
 // Only for rendered pages, no errors!
 exports.isLoggedIn = async (req, res, next) => {
@@ -273,6 +293,7 @@ exports.isLoggedIn = async (req, res, next) => {
   }
   next();
 };
+//REVIEW
 
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {

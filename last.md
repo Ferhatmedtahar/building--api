@@ -110,3 +110,30 @@ if (userDataForm)
     updateSettings(form, 'data');
   });
 ```
+
+# building complex email handler
+
+#### build email template with pug & sendGrid service
+
+in email.js we define a class and we pass the user and the url and we define some methods and we can add whatever we want .
+and ofc dont forget we define the transport and the email options
+`we use two services: mailtrap for DEV  & sendgrid for production`
+
+we have a package that remove all the text from html file and let just the content
+`npm i html-to-text`
+
+we can define the urls here like that everything from the requests
+
+```js
+const url = `${req.protocol}://${req.get('host')}`;
+```
+
+sendGrid now
+created account
+we go to the setup guide
+integrate our api with smtp :Relay `that it work with nodemailer`
+-create api key than copy and make :env varaialbes for them
+
+---
+
+payments with STRIPE
