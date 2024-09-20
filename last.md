@@ -137,3 +137,37 @@ integrate our api with smtp :Relay `that it work with nodemailer`
 ---
 
 payments with STRIPE
+
+to allow users to buy
+//backend:
+we create a route that create a stripe checkout session `secret key`[data about the product and client]
+//frontend
+we create a function that request a checkout session in BUY BUTTON
+
+than we charge the credit cart using THAT SESSION using `public key`
+
+//work only in deployed .
+than we use `stripe web hook ` on backend to create new booking
+
+---
+
+on booking controller and router we create a get handler on specific tour
+we find the tour and craete a session using `npm i stripe`+ get the secret key
+
+we got the session and send it back to the client
+
+---
+
+on
+
+# DEPLOY
+
+1/ install a package to compress all our responces.
+`npm i compression`
+
+2/ remove all the logs .
+
+3/change the url in the client side from the development url `http:127.0.0.3000` ,
+we let only the relative url not absolute . `not this if the front and back ends are hosted in diffrent places `
+
+4/ created the bundle : build
